@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+<a role="button" class="btn btn-primary" href="{% url 'app:pass-manager' %}">Back</a>
+<div class='card'>
+    <div class='card-body'>
+        <p class="card-text">site name: {{content.site_name}}</p>
+        <p class="card-text">site url:<a href="http://{{content.site_url}}" target="_blank">{{content.site_url}}</a></p>
+        <p class="card-text">account name: {{content.account_name}}</p>
+        <p class="card-text">accont password: {{content.account_password}}</p>
+        <button type="button" class="btn btn-primary">Update</button>
+    </div>
+</div>
+{% endblock %}
