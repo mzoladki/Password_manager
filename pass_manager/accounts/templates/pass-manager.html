@@ -7,12 +7,12 @@
     class App extends React.Component {
         customStyles = {
             content : {
-                top                   : '50%',
-                left                  : '50%',
-                right                 : 'auto',
-                bottom                : 'auto',
-                marginRight           : '-50%',
-                transform             : 'translate(-50%, -50%)'
+                top: '50%',
+                left: '50%',
+                right: 'auto',
+                bottom: 'auto',
+                marginRight: '-50%',
+                transform: 'translate(-50%, -50%)'
             }
         };
         constructor(props){
@@ -69,7 +69,6 @@
         }
 
         openModal = (pass) => {
-            console.log(pass)
             if (pass == 'add') {
                 this.setState({
                     addingMode: true,
@@ -113,6 +112,7 @@
         deletingModeHandler = () => { this.setState({deletingMode: true}) }
 
         sendPassSiteFunction = (e) => {
+            e.preventDefault();
             const body = {
                     user: {{request.user.id}},
                     site_name: this.state.siteName,
@@ -126,17 +126,24 @@
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
                     'X-CSRFToken': csrftoken
-                }});
+                }}).then((res) => {
+                    this.setState({passes: [...this.state.passes, res.data]});
+                });
             }
             else if (this.state.deletingMode == true){
                 body.id = this.state.pass_id
+                console.log(body.id)                
                 axios.delete("{% url 'api:pass-site-detail' %}"+ "?pk="+ this.state.pass_id, {headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
                     'X-CSRFToken': csrftoken
-                }}).then(
-                    this.setState({deletingMode: false})
-                );
+                }}).then((res) => {
+                    const list = this.state.passes.filter((element) => { return element.id != body.id})
+                    this.setState({
+                        deletingMode: false,
+                        passes: list
+                    })
+                });
             }
             else{
                 body.id = this.state.pass_id
@@ -144,9 +151,21 @@
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
                     'X-CSRFToken': csrftoken
-                }})
-
+                }}).then((res)=>{
+                    const list = this.state.passes.filter((element) => {
+                        if(element.id == body.id){
+                            element.site_name = res.data.site_name;
+                            element.site_url = res.data.site_url;
+                            element.account_name = res.data.account_name;
+                            element.account_password = res.data.account_password;
+                        }
+                    })
+                    this.setState({
+                        passess: list
+                    })
+                });
             }
+         
         }
 
         modalPasswordInput = () => {

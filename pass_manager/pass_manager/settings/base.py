@@ -15,6 +15,7 @@ from env_reader import read_from_env_file
 
 variables = read_from_env_file()
 LOGIN_REDIRECT_URL = '/pass-manager/'
+LOGOUT_REDIRECT_URL = '/'
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
