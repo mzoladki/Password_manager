@@ -1,7 +1,39 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-
+    {% if site_name %}
+        <div class='row'>
+            <div class='col-3'>
+            </div>
+            <div class='col-6'>
+                <h1> SHARED DATA </h1>
+                <table class='table table-bordered table-dark table-hover'>
+                    <thead>
+                        <tr>
+                            <th scope='row'> Site name</th>
+                            <th> {{site_name}}</th>
+                        </tr>
+                        <tr>
+                            <th scope='row'> Site url </th>
+                            <th> {{site_url}}</th>
+                        </tr>
+                        <tr>
+                            <th scope='row'> Account name</th> 
+                            <th> {{account_name}}</th>
+                        </tr>
+                        <tr>
+                            <th scope='row'> Account password</th> 
+                            <th> {{account_password}}</th>
+                        </tr>
+                    </thead>
+                </table>        
+            </div>
+            <div class='col-3'>
+                    
+            </div>
+        </div>
+    {% else %}
+        <h1>I guess that your token is not valid anymore :(</h1>
+    {% endif %}
 
 {% endblock %}

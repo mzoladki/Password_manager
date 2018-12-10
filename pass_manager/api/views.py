@@ -6,6 +6,7 @@ from .models import PassSite
 from .serializer import PassSiteSerializer
 from rest_framework import status
 from django.shortcuts import get_object_or_404
+import jwt
 from datetime import datetime, timedelta
 import base64
 
@@ -52,3 +53,13 @@ class PassSiteDetailApiView(APIView):
         pass_site = self.get_object(request.GET.get('pk',''), request.user)
         pass_site.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class CreatePassSiteShareApiView(APIView):
+
+    def post(self, request, format=None):
+        print(request.data)
+        request.data['exp'] = datetime.utcnow()+ timedelta(minutes=5)
+        jwt_payload = str(jwt.encode(request.data, 'secret', algorithm='HS256'))[2:-1]
+        print(jwt_payload)
+        return JsonResponse({'token': jwt_payload}, status=status.HTTP_201_CREATED)
