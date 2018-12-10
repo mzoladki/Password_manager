@@ -99,7 +99,7 @@
                 pass_id: {{request.GET.pk}},
             };
             let csrftoken = this.getCookie('csrftoken');
-            axios.post("{% url 'api:create-pass-site-share' %}", body, {headers: {
+            asios.post("{% url 'api:create-pass-site-share' %}", body, {headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
                 'X-CSRFToken': csrftoken

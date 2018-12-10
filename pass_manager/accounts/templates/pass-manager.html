@@ -5,16 +5,28 @@
 <script type='text/babel'>
 
     class App extends React.Component {
-        
+        customStyles = {
+            content : {
+                top                   : '50%',
+                left                  : '50%',
+                right                 : 'auto',
+                bottom                : 'auto',
+                marginRight           : '-50%',
+                transform             : 'translate(-50%, -50%)'
+            }
+        };
         constructor(props){
             super(props)
             this.state = {
                 passes: [],
                 modalIsOpen: false,
+                pass_id: '',
                 siteName: '',
                 siteUrl: '',
                 accountName: '',
                 accountPassword: '',
+                addingMode: false,
+                deletingMode: false,
             }
 
             axios.defaults.xsrfCookieName = 'csrftoken'
@@ -32,7 +44,6 @@
 
         CSRFToken = () => {
             var csrftoken = this.getCookie('csrftoken');
-            console.log(csrftoken)
             return (
                 <input type="hidden" name="csrfmiddlewaretoken" value={csrftoken} />
             );
@@ -40,14 +51,6 @@
 
         componentWillMount() {
             ReactModal.setAppElement('body');
-        }
-
-        addButtonContent = () => {
-            return (
-                <div>
-                    <button onClick={this.clickFunction}>click!</button>
-                </div>
-            )
         }
 
         getCookie = (name) => {
@@ -65,9 +68,39 @@
             return cookieValue;
         }
 
-        openModal = () => { this.setState({modalIsOpen: true}); }
+        openModal = (pass) => {
+            console.log(pass)
+            if (pass == 'add') {
+                this.setState({
+                    addingMode: true,
+                    modalIsOpen: true,
+                    deletingMode: false,
+                });
+            }
+            else {
+                this.setState({
+                    modalIsOpen: true,
+                    addingMode: false,
+                    pass_id: pass.id,
+                    siteName: pass.site_name,
+                    siteUrl: pass.site_url,
+                    accountName: pass.account_name,
+                    accountPassword: pass.account_password,
+                });
+            }
+        }
 
-        closeModal = () => { this.setState({modalIsOpen: false}); }
+        closeModal = () => {
+            this.setState({
+                modalIsOpen: false,
+                pass_id: '',
+                siteName: '',
+                siteUrl: '',
+                accountName: '',
+                accountPassword: '',
+                deletingMode: false,
+            });
+        }
         
         siteNameHandler = (e) => { this.setState({siteName: e.target.value}) }
 
@@ -77,57 +110,104 @@
 
         accountPasswordHandler = (e) => { this.setState({accountPassword: e.target.value}) }
 
-        addPassSiteFunction = (e) => {
+        deletingModeHandler = () => { this.setState({deletingMode: true}) }
+
+        sendPassSiteFunction = (e) => {
             const body = {
-                user: {{request.user.id}},
-                site_name: this.state.siteName,
-                site_url: this.state.siteUrl,
-                account_name: this.state.accountName,
-                account_password: this.state.accountPassword,
-            }
+                    user: {{request.user.id}},
+                    site_name: this.state.siteName,
+                    site_url: this.state.siteUrl,
+                    account_name: this.state.accountName,
+                    account_password: this.state.accountPassword,
+                }
             let csrftoken = this.getCookie('csrftoken');
-            axios.post("{% url 'api:pass-site' %}", body, {headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'X-CSRFToken': window.CSRF_TOKEN
-            }})
+            if (this.state.addingMode == true){
+                axios.post("{% url 'api:pass-site' %}", body, {headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                }});
+            }
+            else if (this.state.deletingMode == true){
+                body.id = this.state.pass_id
+                axios.delete("{% url 'api:pass-site-detail' %}"+ "?pk="+ this.state.pass_id, {headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                }}).then(
+                    this.setState({deletingMode: false})
+                );
+            }
+            else{
+                body.id = this.state.pass_id
+                axios.put("{% url 'api:pass-site-detail' %}", body, {headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                }})
+
+            }
+        }
+
+        modalPasswordInput = () => {
+            if (this.state.addingMode == true){
+                return (
+                    <div>
+                        <p><input onChange={this.accountPasswordHandler} type='text' placeholder='account password' value={this.state.accountPassword}/></p>
+                        <button className='btn btn-primary'>add</button>                                        
+                    </div>
+                )
+            }
+            else{
+                return (
+                    <div>
+                        <p><input disabled onChange={this.accountPasswordHandler} type='text' placeholder='account password' value={this.state.accountPassword}/></p>
+                        <button className='btn btn-primary'>change</button>
+                        <button onClick={this.deletingModeHandler} className='btn btn-danger'>delete</button>     
+                    </div>
+                )
+            }
         }
         render() {
             return (
                 <div className='app-component'>
-                    <button onClick={this.openModal} className='btn btn-primary'>Add Pass</button>
+                    <button onClick={() => this.openModal('add')} className='btn btn-primary'>Add Pass</button>
+                    <p></p>
                     <table className='table table-bordered table-dark table-hover'>
                         <thead>
                             <tr>
                                 <th scope='col'>#</th>
-                                <th scope='col'>Site name</th>
+                                <th scope='col'> Site name </th>
+                                <th scope='col'> Site url link </th>
+                                <th scope='col'> Details </th> 
                             </tr>
                         </thead>
                         <tbody>
                             {this.state.passes.map((pass, index) => {
-                                let href_value = "/pass-manager-details?pk=" + pass.id
+                                let href_value = "http://" + pass.site_url
                                 return (
-                                    <tr onClick={this.passHandler}>
+                                    <tr key={pass.id} onClick={this.passHandler}>
                                         <th scope='row'>{index}</th>
                                         <td>{pass.site_name}</td>
-                                        <td><a href={href_value} class='btn btn-primary'>Details</a></td>
+                                        <td><a href={href_value} target="_blank">{pass.site_url}</a></td>
+                                        <td><button onClick={() => this.openModal(pass)} className='btn btn-primary'>Details</button></td>
                                     </tr>
                                 )
                             })}
                         </tbody>
                     </table>
                     <ReactModal
-                    id='modalContent'
-                    isOpen={this.state.modalIsOpen}
-                    onRequestClose={this.closeModal}
+                        id='modalContent'
+                        isOpen={this.state.modalIsOpen}
+                        onRequestClose={this.closeModal}
+                        style={this.customStyles}
                     >
-                        <form onSubmit={this.addPassSiteFunction}>{{csrf_input}}
+                        <form onSubmit={this.sendPassSiteFunction}>
                             {this.CSRFToken()}
-                            <p><input onChange={this.siteNameHandler} type='text' placeholder='site name'/></p>    
-                            <p><input onChange={this.siteUrlHandler} type='text' placeholder='site url'/></p> 
-                            <p><input onChange={this.accountNameHandler} type='text' placeholder='login account name'/></p>    
-                            <p><input onChange={this.accountPasswordHandler} type='password' placeholder='account password'/></p>  
-                            <button className='btn btn-primary'>add</button>                        
+                            <p><input onChange={this.siteNameHandler} type='text' placeholder='site name' value={this.state.siteName}/></p>    
+                            <p><input onChange={this.siteUrlHandler} type='text' placeholder='site url' value={this.state.siteUrl}/></p> 
+                            <p><input onChange={this.accountNameHandler} type='text' placeholder='login account name' value={this.state.accountName}/></p>    
+                            { this.modalPasswordInput() }
                         </form>
                         <button className='btn btn-close' onClick={this.closeModal}>close</button>
                     </ReactModal>

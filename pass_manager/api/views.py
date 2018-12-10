@@ -40,13 +40,13 @@ class PassSiteDetailApiView(APIView):
     def get_object(self, pk, user):
         return get_object_or_404(PassSite, user=user, pk=pk)
 
-    def get(self, request, pk, format=None):
-        pass_site = self.get_object(pk, request.user)
+    def get(self, request, format=None):
+        pass_site = self.get_object(request.data['id'], request.user)
         serializer = self.serializer_class(pass_site)
         return Response(serializer.data)
     
-    def put(self, request, pk, format=None):
-        pass_site = self.get_object(pk, request.user)
+    def put(self, request, format=None):
+        pass_site = self.get_object(request.data['id'], request.user)
         print(request.data)
         serializer = self.serializer_class(pass_site, data=request.data)
         if serializer.is_valid():
@@ -54,8 +54,9 @@ class PassSiteDetailApiView(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, pk, format=None):
-        pass_site = self.get_object(pk, request.user)
+    def delete(self, request, format=None):
+        pass_site = self.get_object(request.GET.get('pk',''), request.user)
+        print(request.data)
         pass_site.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
