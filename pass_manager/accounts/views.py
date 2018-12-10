@@ -4,6 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.views.generic.edit import FormView
 from django.shortcuts import render
 from django.views import View
+import jwt
 
 
 class SignUpView(FormView):
@@ -20,3 +21,13 @@ def pass_manager_view(request):
 
 def pass_manager_detail_view(request):
     return render(request, 'pass-manager-detail.html')
+
+def pass_manager_share_view(request):
+    token = request.GET.get('token', '')
+    print('token: ')
+    print(token)
+    print(token[2:])
+    encoded_token = jwt.decode(token, 'secret', algorithms=['HS256'])
+    print(encoded_token)
+
+    return render(request, 'pass-manager-share.html')

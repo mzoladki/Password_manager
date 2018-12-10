@@ -79,7 +79,7 @@
             axios.put("{% url 'api:pass-site-detail' pk=request.GET.pk %}", body, {headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                'X-CSRFToken': window.CSRF_TOKEN
+                'X-CSRFToken': csrftoken
             }})
         }
 
@@ -91,6 +91,21 @@
                 'X-CSRFToken': csrftoken
             }})
             window.location.reload();  
+        }
+
+        shareLink = (e) => {
+            const body = {
+                user: {{request.user.id}},
+                pass_id: {{request.GET.pk}},
+            };
+            let csrftoken = this.getCookie('csrftoken');
+            axios.post("{% url 'api:create-pass-site-share' %}", body, {headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            }}).then((res) => {
+                console.log(res)
+            })
         }
 
         render() {
@@ -143,6 +158,7 @@
                             <button className='btn btn-primary'>Change</button>                        
                         </form>
                         <button className='btn btn-primary' onClick={this.deleteFunction}>delete</button>                            
+                        <button className='btn btn-primary' onClick={this.shareLink}>share!</button>
                         <button className='btn btn-close' onClick={this.closeModal}>close</button>
                     </ReactModal>
                     

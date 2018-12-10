@@ -7,6 +7,9 @@ from .serializer import PassSiteSerializer
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.hashers import make_password
+import jwt
+from datetime import datetime, timedelta
+
 
 class UserApiView(APIView):
     def get(self, request, format=None):
@@ -55,3 +58,19 @@ class PassSiteDetailApiView(APIView):
         pass_site = self.get_object(pk, request.user)
         pass_site.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class CreatePassSiteShareApiView(APIView):
+
+    def post(self, request, format=None):
+        jwt_payload = str(jwt.encode({'user': request.user.id, 'pass_id': request.data['pass_id'], 'exp': datetime.utcnow()+ timedelta(minutes=5)}, 'secret', algorithm='HS256'))
+        print('asasdas')        
+        jwt_payload = jwt_payload[2:]
+        print(jwt_payload)
+        jwt_payload = jwt_payload[:-1]
+        print(jwt_payload)
+        print('asasdas')
+        encoded = jwt.decode(jwt_payload, 'secret', algorithms=['HS256'])
+        print(encoded)
+        print('asdasda')
+        return JsonResponse({'token': jwt_payload}, status=status.HTTP_201_CREATED)
