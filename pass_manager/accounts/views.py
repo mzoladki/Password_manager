@@ -25,10 +25,7 @@ def pass_manager_view(request):
 def pass_manager_share_view(request):
     try:
         token = request.GET.get('token', '')
-        print('token: ')
-        print(token)
         encoded_token = jwt.decode(token, 'secret', algorithms=['HS256'])
-        print(encoded_token)
         return render(request, 'pass-manager-share.html', context=encoded_token)
     except jwt.exceptions.ExpiredSignatureError:
         return render(request, 'pass-manager-share.html')

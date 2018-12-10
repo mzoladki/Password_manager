@@ -114,7 +114,6 @@
         deletingModeHandler = () => { this.setState({deletingMode: true}) }
 
         shareFunction = (e) => {
-            console.log(e)
             const body = {
                     user: {{request.user.id}},
                     site_name: this.state.siteName,
@@ -129,11 +128,9 @@
                     'X-CSRFToken': csrftoken
                 }}).then((res) => {
                     let hostname = window.location.hostname + ":" + window.location.port
-                    console.log(window.location)
                     this.setState({
                         sharedLink: hostname + "/pass-manager-share/?token=" + res.data.token
                     })
-                    console.log(this.state.sharedLink)
                 });
         }
 
@@ -155,7 +152,6 @@
             }
             else if (this.state.deletingMode == true){
                 body.id = this.state.pass_id
-                console.log(body.id)                
                 axios.delete("{% url 'api:pass-site-detail' %}"+ "?pk="+ this.state.pass_id, {headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
