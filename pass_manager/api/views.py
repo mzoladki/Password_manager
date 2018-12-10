@@ -6,28 +6,22 @@ from .models import PassSite
 from .serializer import PassSiteSerializer
 from rest_framework import status
 from django.shortcuts import get_object_or_404
-from django.contrib.auth.hashers import make_password
-import jwt
 from datetime import datetime, timedelta
+import base64
 
-
-class UserApiView(APIView):
-    def get(self, request, format=None):
-        """
-        Return a list of all users.
-        """
-        usernames = [user.username for user in User.objects.all()]
-        return Response(usernames)
 
 class PassSiteApiView(APIView):
     serializer_class = PassSiteSerializer
 
     def get(self, request, format=None):
-        serializer = self.serializer_class(PassSite.objects.filter(user__id=request.GET['id']), many=True)
+        data = PassSite.objects.filter(user__id=request.GET['id'])
+        for d in data:
+            d.account_password = str(base64.b64decode(d.account_password))[2:-1]
+        serializer = self.serializer_class(data, many=True)
         return JsonResponse(serializer.data, safe=False)
 
     def post(self, request, format=None):
-        request.data['account_password'] = make_password(request.data['account_password'])
+        request.data['account_password'] = str(base64.b64encode(request.data['account_password'].encode()))[2:-1]
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -47,6 +41,7 @@ class PassSiteDetailApiView(APIView):
     
     def put(self, request, format=None):
         pass_site = self.get_object(request.data['id'], request.user)
+        request.data['account_password'] = str(base64.b64encode(request.data['account_password'].encode()))[2:-1]
         serializer = self.serializer_class(pass_site, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -57,13 +52,3 @@ class PassSiteDetailApiView(APIView):
         pass_site = self.get_object(request.GET.get('pk',''), request.user)
         pass_site.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-class CreatePassSiteShareApiView(APIView):
-
-    def post(self, request, format=None):
-        jwt_payload = str(jwt.encode({'user': request.user.id, 'pass_id': request.data['pass_id'], 'exp': datetime.utcnow()+ timedelta(minutes=5)}, 'secret', algorithm='HS256'))
-        jwt_payload = jwt_payload[2:]
-        jwt_payload = jwt_payload[:-1]
-        encoded = jwt.decode(jwt_payload, 'secret', algorithms=['HS256'])
-        return JsonResponse({'token': jwt_payload}, status=status.HTTP_201_CREATED)

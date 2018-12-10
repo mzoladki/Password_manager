@@ -21,13 +21,3 @@ class SignUpView(SuccessMessageMixin, FormView):
 
 def pass_manager_view(request):
     return render(request, 'pass-manager.html')
-
-def pass_manager_share_view(request):
-    token = request.GET.get('token', '')
-    print('token: ')
-    print(token)
-    print(token[2:])
-    encoded_token = jwt.decode(token, 'secret', algorithms=['HS256'])
-    print(encoded_token)
-
-    return render(request, 'pass-manager-share.html')
