@@ -58,8 +58,6 @@ class PassSiteDetailApiView(APIView):
 class CreatePassSiteShareApiView(APIView):
 
     def post(self, request, format=None):
-        print(request.data)
         request.data['exp'] = datetime.utcnow()+ timedelta(minutes=5)
         jwt_payload = str(jwt.encode(request.data, 'secret', algorithm='HS256'))[2:-1]
-        print(jwt_payload)
         return JsonResponse({'token': jwt_payload}, status=status.HTTP_201_CREATED)
