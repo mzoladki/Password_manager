@@ -8,6 +8,7 @@ import jwt
 from django.contrib.messages import constants as messages
 from django.contrib.messages.views import SuccessMessageMixin
 
+
 class SignUpView(SuccessMessageMixin, FormView):
     template_name = 'signup.html'
     form_class = UserCreationForm

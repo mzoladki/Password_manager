@@ -47,7 +47,6 @@ class PassSiteDetailApiView(APIView):
     
     def put(self, request, format=None):
         pass_site = self.get_object(request.data['id'], request.user)
-        print(request.data)
         serializer = self.serializer_class(pass_site, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -56,7 +55,6 @@ class PassSiteDetailApiView(APIView):
 
     def delete(self, request, format=None):
         pass_site = self.get_object(request.GET.get('pk',''), request.user)
-        print(request.data)
         pass_site.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -65,13 +63,7 @@ class CreatePassSiteShareApiView(APIView):
 
     def post(self, request, format=None):
         jwt_payload = str(jwt.encode({'user': request.user.id, 'pass_id': request.data['pass_id'], 'exp': datetime.utcnow()+ timedelta(minutes=5)}, 'secret', algorithm='HS256'))
-        print('asasdas')        
         jwt_payload = jwt_payload[2:]
-        print(jwt_payload)
         jwt_payload = jwt_payload[:-1]
-        print(jwt_payload)
-        print('asasdas')
         encoded = jwt.decode(jwt_payload, 'secret', algorithms=['HS256'])
-        print(encoded)
-        print('asdasda')
         return JsonResponse({'token': jwt_payload}, status=status.HTTP_201_CREATED)
