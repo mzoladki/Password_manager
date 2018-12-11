@@ -1,6 +1,16 @@
+certifi==2018.11.29
+chardet==3.0.4
 Django==2.1.4
 django-cors-headers==2.4.0
 djangorestframework==3.9.0
+idna==2.8
+Naked==0.1.31
 pkg-resources==0.0.0
+pyasn1==0.4.4
+pycryptodome==3.7.2
 PyJWT==1.7.1
 pytz==2018.7
+PyYAML==3.13
+requests==2.21.0
+shellescape==3.4.1
+urllib3==1.24.1
