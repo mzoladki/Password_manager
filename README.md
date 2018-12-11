@@ -22,6 +22,9 @@ Just after that proccess you can easily start using pass-manager.
 I strongly believe that apps that we're creating should just fit our needs.
 An because of that I decided to:
 
-	1. use SQLite instead of Postgresql (for an example). Despite for the fact that postgresql is much stronger than sqlite, in this case using postgres is not needed.
-	2. use sometimes function based views instead of class-based views. When all that view has to do is render HTML file there is no need to take much fatter classes.
-
+	1. Use SQLite instead of Postgresql (for an example).
+	Despite for the fact that postgresql is much stronger than sqlite, in this case using postgres is not needed.
+	2. Use sometimes function based views instead of class-based views. 
+	When all that view has to do is render HTML file there is no need to take much fatter classes.
+	3. In this case I decided to use base64 to hash passwords, but it shouldn't be done that way. 
+	Base64 is not meant to do such a thing, but it's better to hash it using base64 than leave it as raw string.
