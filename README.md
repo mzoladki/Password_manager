@@ -31,3 +31,10 @@ An because of that I decided to:
 	When all that view has to do is render HTML file there is no need to take much fatter classes.
 	3. I decided to use RSA cryptosystem because it's easy to implement (especially with python librerys) and secure.
 
+## What to fix
+
+
+11.12.2018 - 
+
+I think that the thing that should be fixed is adding/changing/deleting passwords without reloading the page.
+It's easy to do, and looks better for users.
