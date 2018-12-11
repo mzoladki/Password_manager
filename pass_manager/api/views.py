@@ -8,8 +8,7 @@ from rest_framework import status
 from django.shortcuts import get_object_or_404
 import jwt
 from datetime import datetime, timedelta
-import base64
-
+from .hash_password import hash, unhash
 
 class PassSiteApiView(APIView):
     serializer_class = PassSiteSerializer
@@ -17,13 +16,15 @@ class PassSiteApiView(APIView):
     def get(self, request, format=None):
         data = PassSite.objects.filter(user__id=request.GET['id'])
         for d in data:
-            d.account_password = str(base64.b64decode(d.account_password))[2:-1]
+            d.account_password = unhash(d.account_password)
         serializer = self.serializer_class(data, many=True)
         return JsonResponse(serializer.data, safe=False)
 
     def post(self, request, format=None):
-        request.data['account_password'] = str(base64.b64encode(request.data['account_password'].encode()))[2:-1]
+        request.data['account_password'] = hash(request.data['account_password'])
         serializer = self.serializer_class(data=request.data)
+        print(len(request.data['account_password']))
+        print(serializer)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -42,7 +43,7 @@ class PassSiteDetailApiView(APIView):
     
     def put(self, request, format=None):
         pass_site = self.get_object(request.data['id'], request.user)
-        request.data['account_password'] = str(base64.b64encode(request.data['account_password'].encode()))[2:-1]
+        request.data['account_password'] = hash(request.data['account_password'])
         serializer = self.serializer_class(pass_site, data=request.data)
         if serializer.is_valid():
             serializer.save()
