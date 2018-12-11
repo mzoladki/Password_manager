@@ -7,6 +7,8 @@ from django.views import View
 import jwt
 from django.contrib.messages import constants as messages
 from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib.auth.decorators import login_required
+from django.conf import settings
 
 
 class SignUpView(SuccessMessageMixin, FormView):
@@ -19,5 +21,6 @@ class SignUpView(SuccessMessageMixin, FormView):
         form.save()
         return super().form_valid(form)
 
+@login_required(login_url=settings.LOGOUT_REDIRECT_URL)
 def pass_manager_view(request):
     return render(request, 'pass-manager.html')

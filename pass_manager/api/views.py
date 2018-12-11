@@ -22,8 +22,6 @@ class PassSiteApiView(APIView):
     def post(self, request, format=None):
         request.data['account_password'] = hash(request.data['account_password'])
         serializer = self.serializer_class(data=request.data)
-        print(len(request.data['account_password']))
-        print(serializer)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
