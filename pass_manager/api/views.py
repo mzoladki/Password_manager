@@ -8,9 +8,17 @@ from rest_framework import status
 from django.shortcuts import get_object_or_404
 from datetime import datetime, timedelta
 from .hash_password import hash, unhash
+from rest_framework.authentication import SessionAuthentication
+from rest_framework.permissions import IsAuthenticated
+
 
 class PassSiteApiView(APIView):
     serializer_class = PassSiteSerializer
+
+    authentication_classes = (SessionAuthentication, )
+    permission_classes = (IsAuthenticated,)
+
+
 
     def get(self, request, format=None):
         data = PassSite.objects.filter(user__id=request.GET['id'])
@@ -29,6 +37,9 @@ class PassSiteApiView(APIView):
 
 class PassSiteDetailApiView(APIView):
     serializer_class = PassSiteSerializer
+
+    authentication_classes = (SessionAuthentication, )
+    permission_classes = (IsAuthenticated,)
 
     def get_object(self, pk, user):
         return get_object_or_404(PassSite, user=user, pk=pk)
