@@ -6,9 +6,11 @@ This is my recuitment task
 
 In order to install project you have to follow few simple steps:
 
-	1. ` git clone https://github.com/mzoladki/password_manager.git `
-	2. ` python manage.py migrate `
-	3. ` python manange.py runserver `
+	1. git clone https://github.com/mzoladki/password_manager.git
+	2. python hash_password.py (in order to create your private and public keys to secure passwords)
+	3. python manage.py migrate
+	4. python manange.py runserver
+
 
 And up from this time you can easily have fun with project.
 
@@ -26,5 +28,5 @@ An because of that I decided to:
 	Despite for the fact that postgresql is much stronger than sqlite, in this case using postgres is not needed.
 	2. Use sometimes function based views instead of class-based views. 
 	When all that view has to do is render HTML file there is no need to take much fatter classes.
-	3. In this case I decided to use base64 to hash passwords, but it shouldn't be done that way. 
-	Base64 is not meant to do such a thing, but it's better to hash it using base64 than leave it as raw string.
+	3. I decided to use RSA cryptosystem because it's easy to implement (especially with python librerys) and secure.
+
