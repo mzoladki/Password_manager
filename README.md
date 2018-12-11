@@ -34,7 +34,15 @@ An because of that I decided to:
 ## What to fix
 
 
+<<<<<<< HEAD
 11.12.2018 - 
 
 I think that the thing that should be fixed is adding/changing/deleting passwords without reloading the page.
 It's easy to do, and looks better for users.
+=======
+11.12.2018 -
+
+I think that the thing that should be fixed is adding/changing/deleting passwords without rel$
+It's easy to do, and looks better for users.
+
+>>>>>>> 6b1173a87e78032dfd05655f05c527e8ffc662c9
