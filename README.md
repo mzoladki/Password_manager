@@ -4,15 +4,16 @@ This is my recuitment task
 
 ## Instalation
 
-In order to install project you have to follow few simple steps:
+In order to install project you have type thos commands in your console simple:
 
 	1. git clone https://github.com/mzoladki/password_manager.git
-	2. python hash_password.py (in order to create your private and public keys to secure passwords)
-	3. python manage.py migrate
-	4. python manange.py runserver
+	2. pip install -r requirements.txt
+	3. python generate_key.py (please remember to run it only when you're in api/ directory)
+	4. python manage.py migrate
+	5. python manange.py runserver
 
 
-And up from this time you can easily have fun with project.
+And now you can have fun with project.
 
 ## Usage
 
